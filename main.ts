@@ -1,6 +1,8 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import { SearchModal } from 'Views/search_modal';
-// Remember to rename these classes and interfaces!
+import { ItemsSuggestModal } from 'Views/suggest_modal';
+import { KinopoiskSuggestItem } from 'Models/kinopoisk_response'
+import { MoviewShow } from 'Models/MovieShow.model';
 
 interface MyPluginSettings {
 	mySetting: string;
@@ -32,8 +34,50 @@ export default class ObsidianKinopoiskPlugin extends Plugin {
 		this.addSettingTab(new SampleSettingTab(this.app, this));
 	}
 
+	showNotice(error: Error) {
+		try {
+		  new Notice(error.message);
+		} catch {
+		  // eslint-disable
+		}
+	  }
+
 	async createNewNote(): Promise<void> {
-		new SearchModal(this, '').open();
+		try {
+			const movieShow = await this.searchMovieShow();
+			console.log(movieShow)
+	  
+			// open file
+			const activeLeaf = this.app.workspace.getLeaf();
+			if (!activeLeaf) {
+			  console.warn('No active leaf');
+			  return;
+			}
+		  } catch (err) {
+			console.warn(err);
+			this.showNotice(err);
+		  }
+	}
+
+	async searchMovieShow(): Promise<MoviewShow> {
+		const searchedItems = await this.openSearchModal();
+		return await this.openSuggestModal(searchedItems);
+	}
+
+	async openSearchModal(): Promise<KinopoiskSuggestItem[]> {
+		return new Promise((resolve, reject) => {
+		  return new SearchModal(this, (error, results) => {
+			return error ? reject(error) : resolve(results ?? []);
+		  }).open();
+		});
+	}
+
+	async openSuggestModal(items: KinopoiskSuggestItem[]): Promise<MoviewShow> {
+		return new Promise((resolve, reject) => {
+		  return new ItemsSuggestModal(this.app, items, (error, selectedItem) => {
+			return error ? reject(error) : resolve(selectedItem!);
+		  }).open();
+		});
 	}
 
 	async loadSettings() {

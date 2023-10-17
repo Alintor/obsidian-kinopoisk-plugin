@@ -1,5 +1,6 @@
 import { requestUrl } from 'obsidian';
-import { KinopoiskSuggestItem, KinopoiskSuggestItemsResponse} from 'Models/kinopoisk_response'
+import { KinopoiskSuggestItem, KinopoiskSuggestItemsResponse, KinopoiskFullInfo} from 'Models/kinopoisk_response'
+import { MoviewShow } from 'Models/MovieShow.model'
 
 export async function apiGet<T>(
     url: string,
@@ -33,4 +34,54 @@ export async function getByQuery(query: string): Promise<KinopoiskSuggestItem[]>
     console.warn(error);
     throw error;
   }
+}
+
+export async function getMovieShowById(id: number): Promise<MoviewShow> {
+  try {
+    const searchResul = await apiGet<KinopoiskFullInfo>(`https://api.kinopoisk.dev/v1.3/movie/${id}`);
+    return createMovieShowFrom(searchResul);
+  } catch (error) {
+    console.warn(error);
+    throw error;
+  }
+}
+
+function createMovieShowFrom(fullInfo: KinopoiskFullInfo): MoviewShow {
+  const seasonsCount = fullInfo.seasonsInfo?.length ?? 0;
+  let seriesInSeasonCount = 0;
+  if (seasonsCount > 0) {
+    const seasonInfo = fullInfo.seasonsInfo ?? [];
+    const totalEpisodesCount = seasonInfo.reduce((total, season) => total + season.episodesCount, 0);
+    const averageEpisodesCount = totalEpisodesCount / seasonsCount;
+    seriesInSeasonCount = Math.ceil(averageEpisodesCount);
+  }
+  const item: MoviewShow = {
+    id: fullInfo.id,
+    name: fullInfo.name,
+    alternativeName: fullInfo.alternativeName,
+    year: fullInfo.year,
+    description: fullInfo.description,
+    posterUrl: fullInfo.poster.url,
+    genres: fullInfo.genres.map((genre) => capitalizeFirstLetter(genre.name)).join(", "),
+    countries: fullInfo.countries.map((country) => country.name).join(", "),
+    director: fullInfo.persons.find(person => person.enProfession === "director")?.name ?? '',
+    movieLength: fullInfo.movieLength ?? 0,
+    coverUrl: fullInfo.backdrop.url,
+    logoUrl: fullInfo.logo.url,
+    isSeries: fullInfo.isSeries,
+    seriesLength: fullInfo.seriesLength ?? 0,
+    isComplete: (fullInfo.status ?? '') == "completed",
+    seasonsCount: seasonsCount,
+    seriesInSeasonCount: seriesInSeasonCount,
+    kinopoiskUrl: `https://www.kinopoisk.ru/film/${fullInfo.id}/`
+  }
+
+  return item;
+}
+
+function capitalizeFirstLetter(input: string): string {
+  if (input.length === 0) {
+      return input;
+  }
+  return input.charAt(0).toUpperCase() + input.slice(1);
 }

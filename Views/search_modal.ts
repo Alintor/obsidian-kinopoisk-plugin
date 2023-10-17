@@ -1,13 +1,16 @@
 import { ButtonComponent, Modal, Setting, TextComponent, Notice } from 'obsidian';
+import { KinopoiskSuggestItem } from 'Models/kinopoisk_response'
+import { getByQuery } from 'APIProvider/provider'
 import ObsidianKinopoiskPlugin from 'main';
 
 export class SearchModal extends Modal {
     private isBusy = false;
     private okBtnRef?: ButtonComponent;
+    private query: string = '';
   
     constructor(
       plugin: ObsidianKinopoiskPlugin,
-      private query: string,
+      private callback: (error: Error | null, result?: KinopoiskSuggestItem[]) => void,
     ) {
       super(plugin.app);
     }
@@ -26,17 +29,17 @@ export class SearchModal extends Modal {
       if (!this.isBusy) {
         try {
           this.setBusy(true);
-          //const searchResults = await this.serviceProvider.getByQuery(this.query);
+          const searchResults = await getByQuery(this.query);
           this.setBusy(false);
   
-        //   if (!searchResults?.length) {
-        //     new Notice(`No results found for "${this.query}"`); // Couldn't find the book.
-        //     return;
-        //   }
+          if (!searchResults?.length) {
+            new Notice(`No results found for "${this.query}"`);
+            return;
+          }
   
-        //   this.callback(null, searchResults);
+          this.callback(null, searchResults);
         } catch (err) {
-          //this.callback(err as Error);
+          this.callback(err as Error);
         }
         this.close();
       }
