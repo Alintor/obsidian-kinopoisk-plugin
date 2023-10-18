@@ -7,12 +7,14 @@ export class SearchModal extends Modal {
     private isBusy = false;
     private okBtnRef?: ButtonComponent;
     private query: string = '';
+    private token: string = '';
   
     constructor(
       plugin: ObsidianKinopoiskPlugin,
       private callback: (error: Error | null, result?: KinopoiskSuggestItem[]) => void,
     ) {
       super(plugin.app);
+      this.token = plugin.settings.apiToken;
     }
   
     setBusy(busy: boolean) {
@@ -29,7 +31,7 @@ export class SearchModal extends Modal {
       if (!this.isBusy) {
         try {
           this.setBusy(true);
-          const searchResults = await getByQuery(this.query);
+          const searchResults = await getByQuery(this.query, this.token);
           this.setBusy(false);
   
           if (!searchResults?.length) {

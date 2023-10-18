@@ -3,17 +3,10 @@ import { SearchModal } from 'Views/search_modal';
 import { ItemsSuggestModal } from 'Views/suggest_modal';
 import { KinopoiskSuggestItem } from 'Models/kinopoisk_response'
 import { MoviewShow } from 'Models/MovieShow.model';
-
-interface MyPluginSettings {
-	mySetting: string;
-}
-
-const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
-}
+import { ObsidianKinopoiskPluginSettings, DEFAULT_SETTINGS, ObsidianKinopoiskSettingTab } from 'Settings/settings';
 
 export default class ObsidianKinopoiskPlugin extends Plugin {
-	settings: MyPluginSettings;
+	settings: ObsidianKinopoiskPluginSettings;
 
 	async onload() {
 		await this.loadSettings();
@@ -31,7 +24,7 @@ export default class ObsidianKinopoiskPlugin extends Plugin {
 			}
 		});
 
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.addSettingTab(new ObsidianKinopoiskSettingTab(this.app, this));
 	}
 
 	showNotice(error: Error) {
@@ -74,7 +67,7 @@ export default class ObsidianKinopoiskPlugin extends Plugin {
 
 	async openSuggestModal(items: KinopoiskSuggestItem[]): Promise<MoviewShow> {
 		return new Promise((resolve, reject) => {
-		  return new ItemsSuggestModal(this.app, items, (error, selectedItem) => {
+		  return new ItemsSuggestModal(this, items, (error, selectedItem) => {
 			return error ? reject(error) : resolve(selectedItem!);
 		  }).open();
 		});
@@ -86,32 +79,5 @@ export default class ObsidianKinopoiskPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-	}
-}
-
-
-class SampleSettingTab extends PluginSettingTab {
-	plugin: ObsidianKinopoiskPlugin;
-
-	constructor(app: App, plugin: ObsidianKinopoiskPlugin) {
-		super(app, plugin);
-		this.plugin = plugin;
-	}
-
-	display(): void {
-		const {containerEl} = this;
-
-		containerEl.empty();
-
-		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
-			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
-				.onChange(async (value) => {
-					this.plugin.settings.mySetting = value;
-					await this.plugin.saveSettings();
-				}));
 	}
 }

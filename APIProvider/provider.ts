@@ -4,6 +4,7 @@ import { MoviewShow } from 'Models/MovieShow.model'
 
 export async function apiGet<T>(
     url: string,
+    token: string,
     params: Record<string, string | number> = {},
     headers?: Record<string, string>,
 ): Promise<T> {
@@ -11,24 +12,27 @@ export async function apiGet<T>(
   Object.entries(params).forEach(([key, value]) => {
     apiURL.searchParams.append(key, value?.toString());
   });
+  if (token === '') {
+    throw new Error('You need enter API Token');
+  }
   const res = await requestUrl({
     url: apiURL.href,
     method: 'GET',
     headers: {
       Accept: '*/*',
-      'X-API-KEY': '',
+      'X-API-KEY': token,
       ...headers,
     },
   });
   return res.json as T;
 }
 
-export async function getByQuery(query: string): Promise<KinopoiskSuggestItem[]> {
+export async function getByQuery(query: string, token: string): Promise<KinopoiskSuggestItem[]> {
   try {
     const params = {
       query: query
     };
-    const searchResults = await apiGet<KinopoiskSuggestItemsResponse>('https://api.kinopoisk.dev/v1.2/movie/search', params);
+    const searchResults = await apiGet<KinopoiskSuggestItemsResponse>('https://api.kinopoisk.dev/v1.2/movie/search', token, params);
     return searchResults.docs;
   } catch (error) {
     console.warn(error);
@@ -36,9 +40,9 @@ export async function getByQuery(query: string): Promise<KinopoiskSuggestItem[]>
   }
 }
 
-export async function getMovieShowById(id: number): Promise<MoviewShow> {
+export async function getMovieShowById(id: number, token: string): Promise<MoviewShow> {
   try {
-    const searchResul = await apiGet<KinopoiskFullInfo>(`https://api.kinopoisk.dev/v1.3/movie/${id}`);
+    const searchResul = await apiGet<KinopoiskFullInfo>(`https://api.kinopoisk.dev/v1.3/movie/${id}`, token);
     return createMovieShowFrom(searchResul);
   } catch (error) {
     console.warn(error);

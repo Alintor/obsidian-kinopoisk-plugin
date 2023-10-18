@@ -2,14 +2,18 @@ import { App, SuggestModal } from 'obsidian';
 import { KinopoiskSuggestItem } from 'Models/kinopoisk_response';
 import { MoviewShow } from 'Models/MovieShow.model';
 import { getMovieShowById } from 'APIProvider/provider';
+import ObsidianKinopoiskPlugin from 'main';
 
 export class ItemsSuggestModal extends SuggestModal<KinopoiskSuggestItem> {
+  private token: string = '';
+  
   constructor(
-    app: App,
+    plugin: ObsidianKinopoiskPlugin,
     private readonly suggestion: KinopoiskSuggestItem[],
     private onChoose: (error: Error | null, result?: MoviewShow) => void,
   ) {
-    super(app);
+    super(plugin.app);
+    this.token = plugin.settings.apiToken;
   }
 
   // Returns all available suggestions.
@@ -38,7 +42,7 @@ export class ItemsSuggestModal extends SuggestModal<KinopoiskSuggestItem> {
 
   async getItemDetails(item: KinopoiskSuggestItem) {
     try {
-        const movieShow = await getMovieShowById(item.id);
+        const movieShow = await getMovieShowById(item.id, this.token);
         this.onChoose(null, movieShow);
       } catch (error) {
         this.onChoose(error);

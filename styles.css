@@ -4,3 +4,9 @@
 .kinopoisk-plugin__search-modal--input input {
     width: 100%;
 }
+.obsidian-kinopoisk-plugin__settings input {
+    width: 100%;
+}
+.obsidian-kinopoisk-plugin__settings .search-input-container {
+    width: 100%;
+}
