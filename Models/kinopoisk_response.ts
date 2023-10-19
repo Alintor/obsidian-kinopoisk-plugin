@@ -17,14 +17,14 @@ export interface KinopoiskFullInfo {
     alternativeName: string;
     type: string;
     year: number;
-    description: string;
-    poster: KinopoisImageUrl;
+    description?: string;
+    poster?: KinopoisImageUrl;
     genres: KinopoiskSimpleItem[];
     countries: KinopoiskSimpleItem[];
     persons: KinopoiskPerson[];
     movieLength?: number;
-    backdrop: KinopoisImageUrl;
-    logo: KinopoisImageUrl;
+    backdrop?: KinopoisImageUrl;
+    logo?: KinopoisImageUrl;
     isSeries: boolean;
     seriesLength?: number;
     status?: string;
@@ -32,7 +32,7 @@ export interface KinopoiskFullInfo {
 }
 
 export interface KinopoisImageUrl {
-    url: string;
+    url?: string;
 }
 
 export interface KinopoiskSimpleItem {
@@ -46,5 +46,5 @@ export interface KinopoiskPerson {
 
 export interface KinopoiskSeasonInfo {
     number: number;
-    episodesCount: string;
+    episodesCount: number;
 }

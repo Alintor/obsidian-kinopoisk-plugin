@@ -1,7 +1,7 @@
 {
 	"id": "obsidian-kinopoisk-plugin",
 	"name": "Obsidian Kinopoisk Plugin",
-	"version": "1.0.0",
+	"version": "0.1.0",
 	"minAppVersion": "0.15.0",
 	"description": "Helps you find movies and tv shows via Kinopoisk and create notes.",
 	"author": "Alintor",
