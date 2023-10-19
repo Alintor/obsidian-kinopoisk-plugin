@@ -4,6 +4,8 @@ import { ItemsSuggestModal } from 'Views/suggest_modal';
 import { KinopoiskSuggestItem } from 'Models/kinopoisk_response'
 import { MoviewShow } from 'Models/MovieShow.model';
 import { ObsidianKinopoiskPluginSettings, DEFAULT_SETTINGS, ObsidianKinopoiskSettingTab } from 'Settings/settings';
+import { makeFileName, getTemplateContents, replaceVariableSyntax } from 'Utils/utils';
+import { CursorJumper } from 'Utils/cursor_jumper';
 
 export default class ObsidianKinopoiskPlugin extends Plugin {
 	settings: ObsidianKinopoiskPluginSettings;
@@ -40,12 +42,28 @@ export default class ObsidianKinopoiskPlugin extends Plugin {
 			const movieShow = await this.searchMovieShow();
 			console.log(movieShow)
 	  
-			// open file
-			const activeLeaf = this.app.workspace.getLeaf();
-			if (!activeLeaf) {
-			  console.warn('No active leaf');
-			  return;
+			const {
+				movieFileNameFormat,
+				movieFolder,
+				seriesFileNameFormat,
+				seriesFolder
+			} = this.settings;
+
+			const renderedContents = await this.getRenderedContents(movieShow);
+			const fileNameFormat = movieShow.isSeries ? seriesFileNameFormat : movieFileNameFormat;
+			const folderPath = movieShow.isSeries ? seriesFolder : movieFolder;
+			const fileName = makeFileName(movieShow, fileNameFormat);
+			const filePath = `${folderPath}/${fileName}`;
+			const targetFile = await this.app.vault.create(filePath, renderedContents);
+			const newLeaf = this.app.workspace.getLeaf(true);
+			  if (!newLeaf) {
+				console.warn('No new leaf');
+				return;
 			}
+			await newLeaf.openFile(targetFile, { state: { mode: 'source' } });
+			newLeaf.setEphemeralState({ rename: 'all' });
+			// cursor focus
+			await new CursorJumper(this.app).jumpToNextCursorLocation();
 		  } catch (err) {
 			console.warn(err);
 			this.showNotice(err);
@@ -71,6 +89,20 @@ export default class ObsidianKinopoiskPlugin extends Plugin {
 			return error ? reject(error) : resolve(selectedItem!);
 		  }).open();
 		});
+	}
+
+	async getRenderedContents(movieShow: MoviewShow) {
+		const {
+		  movieTemplateFile,
+		  seriesTemplateFile,
+		} = this.settings;
+		const templateFile = movieShow.isSeries ? seriesTemplateFile : movieTemplateFile;
+		if (templateFile) {
+		  const templateContents = await getTemplateContents(this.app, templateFile);
+		  const replacedVariable = replaceVariableSyntax(movieShow, templateContents);
+		  return replacedVariable;
+		}
+		return '';
 	}
 
 	async loadSettings() {

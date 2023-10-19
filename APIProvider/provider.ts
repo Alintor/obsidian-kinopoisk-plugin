@@ -1,6 +1,7 @@
 import { requestUrl } from 'obsidian';
 import { KinopoiskSuggestItem, KinopoiskSuggestItemsResponse, KinopoiskFullInfo} from 'Models/kinopoisk_response'
 import { MoviewShow } from 'Models/MovieShow.model'
+import { capitalizeFirstLetter } from 'Utils/utils';
 
 export async function apiGet<T>(
     url: string,
@@ -81,11 +82,4 @@ function createMovieShowFrom(fullInfo: KinopoiskFullInfo): MoviewShow {
   }
 
   return item;
-}
-
-function capitalizeFirstLetter(input: string): string {
-  if (input.length === 0) {
-      return input;
-  }
-  return input.charAt(0).toUpperCase() + input.slice(1);
 }
