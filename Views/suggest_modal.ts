@@ -31,8 +31,12 @@ export class ItemsSuggestModal extends SuggestModal<KinopoiskSuggestItem> {
   renderSuggestion(item: KinopoiskSuggestItem, el: HTMLElement) {
     const title = item.name;
     const subtitle = `${item.year}, ${item.alternativeName} (${item.type})`;
-    el.createEl('div', { text: title });
-    el.createEl('small', { text: subtitle });
+    const textInfo = el.createEl("div", { attr: { style: "padding-left: 1em;" } });
+    textInfo.appendChild(el.createEl('div', { text: title }));
+    textInfo.appendChild(el.createEl('small', { text: subtitle }));
+    const container = el.createEl("div", { attr: { style: "display: flex; align-items: center;" } })
+    container.appendChild(el.createEl("img", { attr: { src: item.poster ?? '', width: 100 } }));
+    container.appendChild(textInfo);
   }
 
   // Perform action on the selected suggestion.

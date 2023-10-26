@@ -5,6 +5,7 @@ export interface KinopoiskSuggestItem {
     alternativeName: string;
     type: string;
     year: number;
+    poster?: string;
   }
 
 export interface KinopoiskSuggestItemsResponse {
