@@ -32,7 +32,6 @@ Or, Search in the Obsidian Community plugin. And install it.
 
 <img width="600" src="https://github.com/Alintor/obsidian-kinopoisk-plugin/blob/master/Assets/result_note.png">
 
-<br>
 ## Configure plugin in settings
 
 <img width="700"  src="https://github.com/Alintor/obsidian-kinopoisk-plugin/blob/master/Assets/settings.png">
