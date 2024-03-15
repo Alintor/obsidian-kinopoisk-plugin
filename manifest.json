@@ -1,5 +1,5 @@
 {
-	"id": "unofficial-kinopoisk-plugin",
+	"id": "unofficial-kinopoisk",
 	"name": "Kinopoisk search",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",

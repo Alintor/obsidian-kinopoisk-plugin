@@ -10,7 +10,7 @@ Use Kinopoisk.dev API to get the information.
 
 ## How to install
 
-Click the link to install the Kinopoisk Search plugin: [Install Link](https://obsidian.md/plugins?id=unofficial-kinopoisk-plugin)
+Click the link to install the Kinopoisk Search plugin: [Install Link](https://obsidian.md/plugins?id=unofficial-kinopoisk)
 
 Or, Search in the Obsidian Community plugin. And install it.
 
