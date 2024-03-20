@@ -21,18 +21,13 @@ export default class ObsidianKinopoiskPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		const ribbonIconEl = this.addRibbonIcon(
-			"film",
-			"Search in Kinopoisk",
-			() => {
-				this.createNewNote();
-			}
-		);
-		ribbonIconEl.addClass("my-plugin-ribbon-class");
+		this.addRibbonIcon("film", "Search in Kinopoisk", () => {
+			this.createNewNote();
+		});
 
 		this.addCommand({
 			id: "open-search-kinopoisk-modal",
-			name: "Search in Kinopoisk",
+			name: "Search",
 			callback: () => {
 				this.createNewNote();
 			},
@@ -52,7 +47,6 @@ export default class ObsidianKinopoiskPlugin extends Plugin {
 	async createNewNote(): Promise<void> {
 		try {
 			const movieShow = await this.searchMovieShow();
-			console.log(movieShow);
 
 			const {
 				movieFileNameFormat,
