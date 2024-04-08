@@ -84,7 +84,10 @@ export class ObsidianKinopoiskSettingTab extends PluginSettingTab {
 			.setDesc("New movie notes will be placed here.")
 			.addSearch((cb) => {
 				try {
-					new FolderSuggest(this.app, cb.inputEl);
+					new FolderSuggest(this.app, cb.inputEl, (folder) => {
+						this.plugin.settings.movieFolder = folder;
+						this.plugin.saveSettings();
+					});
 				} catch {
 					// eslint-disable
 				}
@@ -110,7 +113,10 @@ export class ObsidianKinopoiskSettingTab extends PluginSettingTab {
 			.setDesc(movieTemplateFileDesc)
 			.addSearch((cb) => {
 				try {
-					new FileSuggest(this.app, cb.inputEl);
+					new FileSuggest(this.app, cb.inputEl, (file) => {
+						this.plugin.settings.movieTemplateFile = file;
+						this.plugin.saveSettings();
+					});
 				} catch {
 					// eslint-disable
 				}
@@ -144,7 +150,10 @@ export class ObsidianKinopoiskSettingTab extends PluginSettingTab {
 			.setDesc("New tv series notes will be placed here.")
 			.addSearch((cb) => {
 				try {
-					new FolderSuggest(this.app, cb.inputEl);
+					new FolderSuggest(this.app, cb.inputEl, (folder) => {
+						this.plugin.settings.seriesFolder = folder;
+						this.plugin.saveSettings();
+					});
 				} catch {
 					// eslint-disable
 				}
@@ -170,7 +179,10 @@ export class ObsidianKinopoiskSettingTab extends PluginSettingTab {
 			.setDesc(seriesTemplateFileDesc)
 			.addSearch((cb) => {
 				try {
-					new FileSuggest(this.app, cb.inputEl);
+					new FileSuggest(this.app, cb.inputEl, (file) => {
+						this.plugin.settings.seriesTemplateFile = file;
+						this.plugin.saveSettings();
+					});
 				} catch {
 					// eslint-disable
 				}
